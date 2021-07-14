@@ -1,14 +1,52 @@
-const grid = [
-  ['A', 'B'],
-  ['Y', 'Z'],
-];
-
-const boardSize = 6;
+const boardSize = 2;
 const board = [];
+const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+const symbols = ['♥', '♦', '♣', '♠'];
 let firstCard = null;
 let firstCardElement;
 let deck;
 let canClick = true;
+let matchCount = 0;
+const gameInfo = document.createElement('div');
+
+const generateCard = (cardRank, suit) => {
+  let cardName = '';
+  let cardDisplay = '';
+  switch (cardRank) {
+    case 1:
+      cardName = 'Ace';
+      cardDisplay = 'A';
+      break;
+    case 11:
+      cardName = 'Jack';
+      cardDisplay = 'J';
+      break;
+    case 12:
+      cardName = 'Queen';
+      cardDisplay = 'Q';
+      break;
+    case 13:
+      cardName = 'King';
+      cardDisplay = 'K';
+      break;
+    default:
+      cardName = cardRank;
+      cardDisplay = cardRank;
+  }
+
+  const cardColor = suit < 2 ? 'red' : 'black';
+
+  const card = {
+    symbol: symbols[suit],
+    suit: suits[suit],
+    name: cardName,
+    displayName: cardDisplay,
+    colour: cardColor,
+    rank: cardRank,
+    title: `${cardName} of ${suits[suit]}`,
+  };
+  return card;
+};
 
 const squareClick = (cardElement, column, row) => {
   console.log(cardElement);
@@ -27,9 +65,12 @@ const squareClick = (cardElement, column, row) => {
   // first turn
   if (firstCard === null) {
     console.log('first turn');
+    gameInfo.innerText = '';
     firstCard = clickedCard;
     // turn this card over
-    cardElement.innerText = firstCard.name;
+    cardElement.innerHTML = `${firstCard.displayName} <br> ${firstCard.symbol}`;
+    cardElement.classList.add('card-up', clickedCard.colour);
+    output(`You flipped the ${firstCard.title}`);
 
     // hold onto this for later when it may not match
     firstCardElement = cardElement;
@@ -41,26 +82,50 @@ const squareClick = (cardElement, column, row) => {
       clickedCard.name === firstCard.name
         && clickedCard.suit === firstCard.suit
     ) {
+      // match
+      matchCount += 1;
       console.log('match');
-
+      output(`You flipped the ${clickedCard.title}`);
+      output('Match!');
+      setTimeout(() => {
+        gameInfo.innerText = '';
+      }, 1500);
       // turn this card over
-      cardElement.innerText = clickedCard.name;
+      cardElement.innerHTML = `${clickedCard.displayName} <br> ${clickedCard.symbol}`;
+      cardElement.classList.add('card-up', clickedCard.colour);
+      if (matchCount === (boardSize ** 2) / 2) {
+        setTimeout(() => {
+          alert('You win!');
+        }, 10);
+      }
     } else {
       console.log('NOT a match');
+      output(`You flipped the ${clickedCard.title}`);
+      output('No match!');
       canClick = false;
-      cardElement.innerText = clickedCard.name;
+      cardElement.classList.add('card-up', clickedCard.colour);
+      cardElement.innerHTML = `${clickedCard.displayName} <br> ${clickedCard.symbol}`;
       // turn this card back over
       setTimeout(() => {
         firstCardElement.innerText = '';
+        firstCardElement.className = 'card-down';
         cardElement.innerText = '';
+        cardElement.className = 'card-down';
         canClick = true;
-      }, 1000);
+        gameInfo.innerText = '';
+      }, 1500);
     }
 
     // reset the first card
     firstCard = null;
   }
 };
+
+/* write a function that takes cardInfo and cardElement, adds div name and div symbol,
+manipulates classes so that card is "face-up" */
+
+/* write similar function for face-down */
+
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
   const boardElement = document.createElement('div');
@@ -83,7 +148,7 @@ const buildBoardElements = (board) => {
       const square = document.createElement('div');
 
       // set a class for CSS purposes
-      square.classList.add('square');
+      square.classList.add('card-down');
 
       // set the click event
       // eslint-disable-next-line
@@ -107,45 +172,15 @@ const buildBoardElements = (board) => {
 const makeDeck = (cardAmount) => {
   // create the empty deck at the beginning
   const newDeck = [];
-  const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
-  for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
-    // make a variable of the current suit
-    const currentSuit = suits[suitIndex];
-    console.log(`current suit: ${currentSuit}`);
-
-    // loop to create all cards in this suit
-    // rank 1-13
-    for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
-      // Convert rankCounter to string
-      let cardName = `${rankCounter}`;
-
-      // 1, 11, 12 ,13
-      if (cardName === '1') {
-        cardName = 'ace';
-      } else if (cardName === '11') {
-        cardName = 'jack';
-      } else if (cardName === '12') {
-        cardName = 'queen';
-      } else if (cardName === '13') {
-        cardName = 'king';
-      }
-
-      // make a single card object variable
-      const card = {
-        name: cardName,
-        suit: currentSuit,
-        rank: rankCounter,
-      };
-
-      console.log(`rank: ${rankCounter}`);
-
+  for (let i = 1; i <= 13; i += 1) {
+    for (let j = 0; j < 4; j += 1) {
+      const card = generateCard(i, j);
       // add the card to the deck
       newDeck.push(card); // add double the cards to the deck
       newDeck.push(card);
     }
   }
-
   return newDeck;
 };
 
@@ -167,6 +202,11 @@ const shuffleCards = (cards) => {
   return cards;
 };
 
+// DOM output helper
+const output = (message) => {
+  gameInfo.innerHTML += `<br>${message}`;
+};
+
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
@@ -185,6 +225,7 @@ const initGame = () => {
   const boardEl = buildBoardElements(board);
 
   document.body.appendChild(boardEl);
+  document.body.appendChild(gameInfo);
 };
 
 initGame();
