@@ -9,6 +9,7 @@ let canClick = true;
 let gameOver = false;
 let matchCount = 0;
 let timeLimit = 60;
+let highScore = 0;
 const gameInfo = document.createElement('div');
 const startButton = document.createElement('button');
 const gridSelector = document.createElement('input');
@@ -110,7 +111,7 @@ const squareClick = (cardElement, column, row) => {
         cardElement.classList.remove('match');
         firstCardElement.classList.remove('match');
         canClick = true;
-      }, 1500);
+      }, 1000);
       // turn this card over
       cardElement.innerHTML = `${clickedCard.displayName} <br> ${clickedCard.symbol}`;
       cardElement.classList.add('card-up', 'match', clickedCard.colour);
@@ -121,6 +122,7 @@ const squareClick = (cardElement, column, row) => {
           gridSelector.disabled = false;
           startButton.disabled = false;
           gameOver = true;
+          highScore = timeLimit > highScore ? timeLimit : highScore;
         }, 10);
       }
     } else {
@@ -139,7 +141,7 @@ const squareClick = (cardElement, column, row) => {
         cardElement.className = 'card-down';
         canClick = true;
         gameInfo.innerText = '';
-      }, 1500);
+      }, 1000);
     }
 
     // reset the first card
@@ -247,7 +249,7 @@ const startTimer = () => {
 const initGame = () => {
   if (gridSelector.value === ''
       || gridSelector.value % 2 !== 0
-      || gridSelector.value === 0) {
+      || gridSelector.value <= 0) {
     output('Please enter a valid even grid size.');
     return;
   }
@@ -257,6 +259,8 @@ const initGame = () => {
     board = [];
     timeLimit = 60;
   }
+  gameInfo.innerText = '';
+  output('Good luck!');
   startTimer();
   boardSize = gridSelector.value;
   startButton.disabled = true;

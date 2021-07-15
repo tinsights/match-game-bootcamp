@@ -75,6 +75,6 @@ body {
   margin: 20px auto;
   width: 100px;
   background: navy;
-  border: solid black 2px;
-  border-radius: 3px;
+  border: solid grey 4px;
+  border-radius: 4px;
 }
