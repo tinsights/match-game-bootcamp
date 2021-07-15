@@ -15,7 +15,7 @@ const startButton = document.createElement('button');
 const gridSelector = document.createElement('input');
 const playArea = document.createElement('div');
 const timer = document.createElement('div');
-timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor(timeLimit / 10 % 6)}${Math.floor(timeLimit % 10)}`;
+timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor((timeLimit / 10) % 6)}${Math.floor(timeLimit % 10)}`;
 timer.classList.add('timer');
 gridSelector.type = 'number';
 gridSelector.placeholder = 'Enter Grid Size';
@@ -199,8 +199,9 @@ const makeDeck = () => {
     for (let j = 0; j < 4; j += 1) {
       const card = generateCard(i, j);
       // add the card to the deck
-      newDeck.push(card); // add double the cards to the deck
-      newDeck.push(card);
+      const randomIndex = Math.floor(Math.random() * (newDeck.length / 2)) * 2;
+      newDeck.splice(randomIndex, 0, card);
+      newDeck.splice(randomIndex, 0, card);
     }
   }
   return newDeck;
@@ -211,7 +212,7 @@ const shuffleCards = (cards) => {
   // Loop over the card deck array once
   for (let currentIndex = 0; currentIndex < cards.length; currentIndex += 1) {
     // Select a random index in the deck
-    const randomIndex = Math.floor(Math.random() * cards.length);
+    const randomIndex = Math.floor(Math.random() * (cards.length));
     // Select the card that corresponds to randomIndex
     const randomCard = cards[randomIndex];
     // Select the card that corresponds to currentIndex
@@ -242,7 +243,7 @@ const startTimer = () => {
       return;
     }
     timeLimit -= 1;
-    timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor(timeLimit / 10 % 6)}${Math.floor(timeLimit % 10)}`;
+    timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor((timeLimit / 10) % 6)}${Math.floor(timeLimit % 10)}`;
   }, 1000);
 };
 
