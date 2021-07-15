@@ -60,6 +60,14 @@ body {
   color: black;
 }
 
+.match {
+  border: solid 3px chartreuse;
+}
+
+.noMatch {
+  border: solid 3px red;
+}
+
 .timer {
   font-family: myWebFont;
   color: white;

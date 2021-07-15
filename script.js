@@ -6,7 +6,7 @@ let firstCard = null;
 let firstCardElement;
 let deck;
 let canClick = true;
-let restart = false;
+const restart = false;
 let matchCount = 0;
 let timeLimit = 60;
 const gameInfo = document.createElement('div');
@@ -14,7 +14,7 @@ const startButton = document.createElement('button');
 const gridSelector = document.createElement('input');
 const playArea = document.createElement('div');
 const timer = document.createElement('div');
-timer.innerText = `${timeLimit / 60}:${(timeLimit / 10 % 6)}${(timeLimit % 60)}`;
+timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor(timeLimit / 10 % 6)}${Math.floor(timeLimit % 10)}`;
 timer.classList.add('timer');
 gridSelector.type = 'number';
 gridSelector.placeholder = 'Enter Grid Size';
@@ -100,22 +100,27 @@ const squareClick = (cardElement, column, row) => {
         && clickedCard.suit === firstCard.suit
     ) {
       // match
+      canClick = false;
       matchCount += 1;
       console.log('match');
       output(`You flipped the ${clickedCard.title}`);
       output('Match!');
       setTimeout(() => {
         gameInfo.innerText = '';
+        cardElement.classList.remove('match');
+        firstCardElement.classList.remove('match');
+        canClick = true;
       }, 1500);
       // turn this card over
       cardElement.innerHTML = `${clickedCard.displayName} <br> ${clickedCard.symbol}`;
-      cardElement.classList.add('card-up', clickedCard.colour);
+      cardElement.classList.add('card-up', 'match', clickedCard.colour);
+      firstCardElement.classList.add('match');
       if (matchCount === (boardSize ** 2) / 2) {
         setTimeout(() => {
           output('You win!');
-          restart = true;
           gridSelector.disabled = false;
           startButton.disabled = false;
+          // clearInterval(ref);
         }, 10);
       }
     } else {
@@ -123,7 +128,8 @@ const squareClick = (cardElement, column, row) => {
       output(`You flipped the ${clickedCard.title}`);
       output('No match!');
       canClick = false;
-      cardElement.classList.add('card-up', clickedCard.colour);
+      cardElement.classList.add('card-up', 'noMatch', clickedCard.colour);
+      firstCardElement.classList.add('noMatch');
       cardElement.innerHTML = `${clickedCard.displayName} <br> ${clickedCard.symbol}`;
       // turn this card back over
       setTimeout(() => {
@@ -230,7 +236,7 @@ const startTimer = () => {
     }
 
     timeLimit -= 1;
-    timer.innerText = `${(timeLimit / 60).toPrecision(1)}:${(timeLimit / 10 % 6).toFixed(1)}${(timeLimit % 60)}`;
+    timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor(timeLimit / 10 % 6)}${Math.floor(timeLimit % 10)}`;
   }, 1000);
 };
 
