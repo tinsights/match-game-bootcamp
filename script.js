@@ -244,7 +244,7 @@ const initGame = () => {
   if (gridSelector.value === ''
       || gridSelector.value % 2 !== 0
       || gridSelector.value === 0) {
-    output('Please enter a valid grid size.');
+    output('Please enter a valid even grid size.');
     return;
   }
   if (document.getElementById('Board') !== null) {
