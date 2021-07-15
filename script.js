@@ -209,16 +209,23 @@ const makeDeck = () => {
 // Shuffle an array of cards
 const shuffleCards = (cards) => {
   // Loop over the card deck array once
-  for (let currentIndex = 0; currentIndex < cards.length; currentIndex += 1) {
+  for (let currentIndex = 0; currentIndex < cards.length / 2; currentIndex += 2) {
     // Select a random index in the deck
     const randomIndex = Math.floor(Math.random() * cards.length);
     // Select the card that corresponds to randomIndex
-    const randomCard = cards[randomIndex];
+    let randomCard = cards[randomIndex];
     // Select the card that corresponds to currentIndex
-    const currentCard = cards[currentIndex];
+    let currentCard = cards[currentIndex];
     // Swap positions of randomCard and currentCard in the deck
     cards[currentIndex] = randomCard;
     cards[randomIndex] = currentCard;
+
+    randomCard = cards[randomIndex + 1];
+    // Select the card that corresponds to currentIndex
+    currentCard = cards[currentIndex + 1];
+    // Swap positions of randomCard and currentCard in the deck
+    cards[currentIndex + 1] = randomCard;
+    cards[randomIndex + 1] = currentCard;
   }
   // Return the shuffled deck
   return cards;
@@ -258,6 +265,7 @@ const initGame = () => {
     toRemove.remove();
     board = [];
     timeLimit = 60;
+    gameOver = false;
   }
   gameInfo.innerText = '';
   output('Good luck!');
@@ -267,9 +275,9 @@ const initGame = () => {
   gridSelector.disabled = true;
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
-  const doubleDeck = makeDeck();
-  const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
-  deck = shuffleCards(deckSubset);
+  let doubleDeck = makeDeck();
+  doubleDeck = shuffleCards(doubleDeck);
+  deck = doubleDeck.slice(0, boardSize * boardSize);
 
   // deal the cards out to the board data structure
   for (let i = 0; i < boardSize; i += 1) {
