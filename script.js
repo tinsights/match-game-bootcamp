@@ -1,13 +1,30 @@
-const boardSize = 2;
-const board = [];
+let boardSize = 0;
+let board = [];
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const symbols = ['♥', '♦', '♣', '♠'];
 let firstCard = null;
 let firstCardElement;
 let deck;
 let canClick = true;
+let restart = false;
 let matchCount = 0;
+let timeLimit = 60;
 const gameInfo = document.createElement('div');
+const startButton = document.createElement('button');
+const gridSelector = document.createElement('input');
+const playArea = document.createElement('div');
+const timer = document.createElement('div');
+timer.innerText = `${timeLimit / 60}:${(timeLimit / 10 % 6)}${(timeLimit % 60)}`;
+timer.classList.add('timer');
+gridSelector.type = 'number';
+gridSelector.placeholder = 'Enter Grid Size';
+startButton.innerText = 'Start New Game';
+
+document.body.appendChild(timer);
+document.body.appendChild(gridSelector);
+document.body.appendChild(startButton);
+document.body.appendChild(playArea);
+document.body.appendChild(gameInfo);
 
 const generateCard = (cardRank, suit) => {
   let cardName = '';
@@ -95,7 +112,10 @@ const squareClick = (cardElement, column, row) => {
       cardElement.classList.add('card-up', clickedCard.colour);
       if (matchCount === (boardSize ** 2) / 2) {
         setTimeout(() => {
-          alert('You win!');
+          output('You win!');
+          restart = true;
+          gridSelector.disabled = false;
+          startButton.disabled = false;
         }, 10);
       }
     } else {
@@ -120,11 +140,6 @@ const squareClick = (cardElement, column, row) => {
     firstCard = null;
   }
 };
-
-/* write a function that takes cardInfo and cardElement, adds div name and div symbol,
-manipulates classes so that card is "face-up" */
-
-/* write similar function for face-down */
 
 const buildBoardElements = (board) => {
   // create the element that everything will go inside of
@@ -165,11 +180,10 @@ const buildBoardElements = (board) => {
     }
     boardElement.appendChild(rowElement);
   }
-
   return boardElement;
 };
 
-const makeDeck = (cardAmount) => {
+const makeDeck = () => {
   // create the empty deck at the beginning
   const newDeck = [];
 
@@ -207,7 +221,36 @@ const output = (message) => {
   gameInfo.innerHTML += `<br>${message}`;
 };
 
+const startTimer = () => {
+  const ref = setInterval(() => {
+    if (timeLimit <= 1) {
+      clearInterval(ref);
+      canClick = false;
+      output('Too slow!');
+    }
+
+    timeLimit -= 1;
+    timer.innerText = `${(timeLimit / 60).toPrecision(1)}:${(timeLimit / 10 % 6).toFixed(1)}${(timeLimit % 60)}`;
+  }, 1000);
+};
+
 const initGame = () => {
+  if (gridSelector.value === ''
+      || gridSelector.value % 2 !== 0
+      || gridSelector.value === 0) {
+    output('Please enter a valid grid size.');
+    return;
+  }
+  if (document.getElementById('Board') !== null) {
+    const toRemove = document.getElementById('Board');
+    toRemove.remove();
+    board = [];
+    timeLimit = 60000;
+  }
+  startTimer();
+  boardSize = gridSelector.value;
+  startButton.disabled = true;
+  gridSelector.disabled = true;
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
   const doubleDeck = makeDeck();
@@ -221,11 +264,10 @@ const initGame = () => {
       board[i].push(deck.pop());
     }
   }
-
   const boardEl = buildBoardElements(board);
+  boardEl.id = 'Board';
 
-  document.body.appendChild(boardEl);
-  document.body.appendChild(gameInfo);
+  playArea.appendChild(boardEl);
 };
 
-initGame();
+startButton.addEventListener('click', initGame);

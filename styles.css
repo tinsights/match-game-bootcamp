@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "myWebFont";
+  src: url("/day3/pre-class/match/digital-7.mono.ttf");
+}
+
 body {
   background-color: pink;
   text-align: center;
@@ -53,4 +58,13 @@ body {
 }
 .black {
   color: black;
+}
+
+.timer {
+  font-family: myWebFont;
+  color: white;
+  font-size: large;
+  margin: 20px auto;
+  width: 100px;
+  background: navy;
 }
