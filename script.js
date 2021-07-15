@@ -251,7 +251,7 @@ const initGame = () => {
     const toRemove = document.getElementById('Board');
     toRemove.remove();
     board = [];
-    timeLimit = 60000;
+    timeLimit = 60;
   }
   startTimer();
   boardSize = gridSelector.value;
