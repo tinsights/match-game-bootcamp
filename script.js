@@ -6,7 +6,7 @@ let firstCard = null;
 let firstCardElement;
 let deck;
 let canClick = true;
-const restart = false;
+let gameOver = false;
 let matchCount = 0;
 let timeLimit = 60;
 const gameInfo = document.createElement('div');
@@ -120,7 +120,7 @@ const squareClick = (cardElement, column, row) => {
           output('You win!');
           gridSelector.disabled = false;
           startButton.disabled = false;
-          // clearInterval(ref);
+          gameOver = true;
         }, 10);
       }
     } else {
@@ -233,8 +233,12 @@ const startTimer = () => {
       clearInterval(ref);
       canClick = false;
       output('Too slow!');
+      return;
     }
-
+    if (gameOver) {
+      clearInterval(ref);
+      return;
+    }
     timeLimit -= 1;
     timer.innerText = `${Math.floor((timeLimit / 60))}:${Math.floor(timeLimit / 10 % 6)}${Math.floor(timeLimit % 10)}`;
   }, 1000);
